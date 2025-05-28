@@ -25,6 +25,13 @@ class SistemaNotas
 
         string[] nomes = new string[numAlunos];
         double[,] notas = new double[numAlunos, numDisciplinas];
+        string[] disciplnas = new string[numDisciplinas];
+
+        for (int i = 0; i < numDisciplinas; i++)
+        {
+            Console.WriteLine($"Digite o nome da disciplina {i + 1}: ");
+            disciplnas[i] = Console.ReadLine();
+        }
 
         for (int i = 0; i < numAlunos; i++)
         {
