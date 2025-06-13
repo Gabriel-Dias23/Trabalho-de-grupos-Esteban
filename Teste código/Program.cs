@@ -11,31 +11,18 @@ Matriz: Armazena as notas dos alunos em várias disciplinas.
 Ordenação: Lista os alunos em ordem alfabética ou por média de notas.
 Busca Binária: Localiza rapidamente um aluno pelo nome.
 */
-
-
 using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Globalization;
- 
 
 class SistemaNotas
 {
     static void Main()
     {
-        
-        int numAlunos = 3;
-        int numDisciplinas = 3;
+        int numAlunos = 2;
+        string[] disciplinas = { "Português", "Matemática", "História" };
+        int numDisciplinas = disciplinas.Length;
 
         string[] nomes = new string[numAlunos];
         double[,] notas = new double[numAlunos, numDisciplinas];
-        string[] disciplnas = new string[numDisciplinas];
-
-        for (int i = 0; i < numDisciplinas; i++)
-        {
-            Console.WriteLine($"Digite o nome da disciplina {i + 1}: ");
-            disciplnas[i] = Console.ReadLine();
-        }
 
         for (int i = 0; i < numAlunos; i++)
         {
@@ -44,7 +31,7 @@ class SistemaNotas
 
             for (int j = 0; j < numDisciplinas; j++)
             {
-                Console.WriteLine($"Nota da disciplina {j + 1}: ");
+                Console.WriteLine($"Nota de {disciplinas[j]}: ");
                 double nota;
 
                 while (!double.TryParse(Console.ReadLine(), out nota) || nota < 0 || nota > 10)
@@ -53,15 +40,11 @@ class SistemaNotas
                 }
 
                 notas[i, j] = nota;
-
-
             }
 
             Console.WriteLine();
-
-
-
         }
+
         double[] medias = new double[numAlunos];
         for (int i = 0; i < numAlunos; i++)
         {
@@ -77,13 +60,15 @@ class SistemaNotas
         do
         {
             Console.WriteLine("\nMenu:");
-            Console.WriteLine("\n1- Lista de alunos em ordem alfabéica");
-            Console.WriteLine(" 2- Lista de alunos por média(maior e menor)");
-            Console.WriteLine(" 3- Buscar aluno por nome");
-            Console.WriteLine(" 4 - sair");
-            Console.WriteLine(" Escolha: ");
+            Console.WriteLine(" 1 - Lista de alunos em ordem alfabética");
+            Console.WriteLine(" 2 - Lista de alunos por média (maior e menor)");
+            Console.WriteLine(" 3 - Buscar aluno por nome");
+            Console.WriteLine(" 4 - Mostrar notas por aluno");
+            Console.WriteLine(" 5 - Sair");
+            Console.Write("Escolha: ");
             opcao = int.Parse(Console.ReadLine());
             Console.Clear();
+
             switch (opcao)
             {
                 case 1:
@@ -99,14 +84,19 @@ class SistemaNotas
                     break;
 
                 case 4:
+                    MostrarNotasPorAluno(nomes, notas, disciplinas);
+                    break;
+
+                case 5:
                     Console.WriteLine("Saindo...");
                     break;
+
                 default:
-                    Console.WriteLine("opção inválda. ");
+                    Console.WriteLine("Opção inválida.");
                     break;
             }
-            
-        } while (opcao != 4);
+
+        } while (opcao != 5);
 
         static void ListarPorNome(string[] nomes, double[] medias)
         {
@@ -127,44 +117,42 @@ class SistemaNotas
                 Console.WriteLine($"{nomes[i]} - Média: {medias[i]:F2}");
             }
         }
+
         static void BuscarAluno(string[] nomes, double[] medias)
         {
-        
-            string[] nomesNormalizados = new string[nomes.Length];
-            for (int i = 0; i < nomes.Length; i++)
+            string[] nomesOrdenados = (string[])nomes.Clone();
+            double[] mediasOrdenadas = (double[])medias.Clone();
+
+            Array.Sort(nomesOrdenados, mediasOrdenadas, StringComparer.CurrentCultureIgnoreCase);
+
+            Console.WriteLine("Digite o nome do aluno para buscar: ");
+            string nomeBusca = Console.ReadLine();
+
+            int pos = Array.BinarySearch(nomesOrdenados, nomeBusca, StringComparer.CurrentCultureIgnoreCase);
+
+            if (pos >= 0)
             {
-                nomesNormalizados[i] = nomes[i].Trim().ToLower();
+                Console.WriteLine($"Aluno encontrado: {nomesOrdenados[pos]} - Média: {mediasOrdenadas[pos]:F2}");
             }
-
-            Console.WriteLine("\nDigite o nome do aluno para buscar:");
-            string termoBusca = Console.ReadLine().Trim().ToLower();
-
-          
-            bool encontrado = false;
-            for (int i = 0; i < nomesNormalizados.Length; i++)
-            {
-                if (nomesNormalizados[i].Contains(termoBusca))
-                {
-                    Console.WriteLine($"Aluno encontrado: {nomes[i]} - Média: {medias[i]:F2}");
-                    encontrado = true;
-                }
-            }
-
-            if (!encontrado)
+            else
             {
                 Console.WriteLine("Aluno não encontrado.");
+            }
+        }
 
-             
-                Console.WriteLine("\nNomes cadastrados:");
-                foreach (string nome in nomes)
+        static void MostrarNotasPorAluno(string[] nomes, double[,] notas, string[] disciplinas)
+        {
+            Console.WriteLine("\nNotas dos Alunos por Disciplina:\n");
+
+            for (int i = 0; i < nomes.Length; i++)
+            {
+                Console.WriteLine($"Aluno: {nomes[i]}");
+                for (int j = 0; j < disciplinas.Length; j++)
                 {
-                    if (nome.ToLower().Contains(termoBusca.Substring(0, Math.Min(3, termoBusca.Length))))
-                    {
-                        Console.WriteLine($"- {nome}");
-                    }
+                    Console.WriteLine($"{disciplinas[j]}: {notas[i, j]:F2}");
                 }
+                Console.WriteLine();
             }
         }
     }
-
 }
