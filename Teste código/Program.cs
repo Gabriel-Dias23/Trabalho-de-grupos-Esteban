@@ -13,17 +13,19 @@ Busca Binária: Localiza rapidamente um aluno pelo nome.
 */
 using System;
 
+
 class SistemaNotas
 {
     static void Main()
     {
-        int numAlunos = 2;
+        int numAlunos = 3;
         string[] disciplinas = { "Português", "Matemática", "História" };
         int numDisciplinas = disciplinas.Length;
 
         string[] nomes = new string[numAlunos];
         double[,] notas = new double[numAlunos, numDisciplinas];
 
+        // Cadastro de alunos e notas
         for (int i = 0; i < numAlunos; i++)
         {
             Console.WriteLine($"Digite o nome do Aluno {i + 1}: ");
@@ -45,6 +47,7 @@ class SistemaNotas
             Console.WriteLine();
         }
 
+        // Cálculo das médias
         double[] medias = new double[numAlunos];
         for (int i = 0; i < numAlunos; i++)
         {
@@ -56,6 +59,7 @@ class SistemaNotas
             medias[i] = soma / numDisciplinas;
         }
 
+        // Menu de opções
         int opcao;
         do
         {
@@ -64,7 +68,8 @@ class SistemaNotas
             Console.WriteLine(" 2 - Lista de alunos por média (maior e menor)");
             Console.WriteLine(" 3 - Buscar aluno por nome");
             Console.WriteLine(" 4 - Mostrar notas por aluno");
-            Console.WriteLine(" 5 - Sair");
+            Console.WriteLine(" 5 - Mostrar notas por materia");
+            Console.WriteLine(" 6 - Sair");
             Console.Write("Escolha: ");
             opcao = int.Parse(Console.ReadLine());
             Console.Clear();
@@ -88,6 +93,9 @@ class SistemaNotas
                     break;
 
                 case 5:
+                    MostrarNotasPorMateria(nomes, notas, disciplinas);
+                    break;
+                case 6:
                     Console.WriteLine("Saindo...");
                     break;
 
@@ -96,25 +104,30 @@ class SistemaNotas
                     break;
             }
 
-        } while (opcao != 5);
+        } while (opcao != 6);
 
+        // Métodos auxiliares
         static void ListarPorNome(string[] nomes, double[] medias)
         {
-            Array.Sort(nomes, medias);
+            string[] nomesOrdenados = (string[])nomes.Clone();
+            double[] mediasOrdenadas = (double[])medias.Clone();
+            Array.Sort(nomesOrdenados, mediasOrdenadas);
             Console.WriteLine("\nLista de Alunos em ordem alfabética:");
-            for (int i = 0; i < nomes.Length; i++)
+            for (int i = 0; i < nomesOrdenados.Length; i++)
             {
-                Console.WriteLine($"{nomes[i]} - Média: {medias[i]:F2}");
+                Console.WriteLine($"{nomesOrdenados[i]} - Média: {mediasOrdenadas[i]:F2}");
             }
         }
 
         static void ListarPorMedia(string[] nomes, double[] medias)
         {
-            Array.Sort(medias, nomes);
+            double[] mediasOrdenadas = (double[])medias.Clone();
+            string[] nomesOrdenados = (string[])nomes.Clone();
+            Array.Sort(mediasOrdenadas, nomesOrdenados);
             Console.WriteLine("\nLista de Alunos por média:");
-            for (int i = 0; i < nomes.Length; i++)
+            for (int i = 0; i < nomesOrdenados.Length; i++)
             {
-                Console.WriteLine($"{nomes[i]} - Média: {medias[i]:F2}");
+                Console.WriteLine($"{nomesOrdenados[i]} - Média: {mediasOrdenadas[i]:F2}");
             }
         }
 
@@ -122,10 +135,9 @@ class SistemaNotas
         {
             string[] nomesOrdenados = (string[])nomes.Clone();
             double[] mediasOrdenadas = (double[])medias.Clone();
-
             Array.Sort(nomesOrdenados, mediasOrdenadas, StringComparer.CurrentCultureIgnoreCase);
 
-            Console.WriteLine("Digite o nome do aluno para buscar: ");
+            Console.Write("Digite o nome do aluno para buscar: ");
             string nomeBusca = Console.ReadLine();
 
             int pos = Array.BinarySearch(nomesOrdenados, nomeBusca, StringComparer.CurrentCultureIgnoreCase);
@@ -139,7 +151,6 @@ class SistemaNotas
                 Console.WriteLine("Aluno não encontrado.");
             }
         }
-
         static void MostrarNotasPorAluno(string[] nomes, double[,] notas, string[] disciplinas)
         {
             Console.WriteLine("\nNotas dos Alunos por Disciplina:\n");
@@ -149,10 +160,25 @@ class SistemaNotas
                 Console.WriteLine($"Aluno: {nomes[i]}");
                 for (int j = 0; j < disciplinas.Length; j++)
                 {
-                    Console.WriteLine($"{disciplinas[j]}: {notas[i, j]:F2}");
+                    Console.WriteLine($"  {disciplinas[j]}: {notas[i, j]:F2}");
                 }
                 Console.WriteLine();
             }
         }
+            static void MostrarNotasPorMateria(string[] nomes, double[,] notas, string[] disciplinas)
+            {
+                Console.WriteLine("\nNotas por Matéria:\n");
+
+                for (int j = 0; j < disciplinas.Length; j++)
+                {
+                    Console.WriteLine($"Matéria: {disciplinas[j]}");
+                    for (int i = 0; i < nomes.Length; i++)
+                    {
+                        Console.WriteLine($"{nomes[i]} - {notas[i, j]:F2}");
+                    }
+                    Console.WriteLine();
+                }
+            }
+        
     }
 }
